@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcp-bloomeo"
+version = "0.1.0"
+description = "MCP server for Bloomeo experiment data API"
+authors = [
+    {name = "Mariano Crimi", email = "m.crimi+demo@integratedbreeding.net"}
+]
+dependencies = [
+    "mcp>=1.0.0",
+    "fastmcp>=1.0.0",
+    "httpx>=0.25.0",
+    "pydantic>=2.0.0"
+]
+
+[project.scripts]
+mcp-bloomeo = "mcp_bloomeo.fastmcp_server:main" 

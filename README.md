@@ -101,11 +101,9 @@ If everything went well you should now see a new integration called *Bloomeo*:
 Ask Claude in natural language:
 
 ```
-"How many experiments do I have?"
-"Show me the first 10 experiments"
-"Get data for experiment 66e461d780d19c639145198b"
-"Search for experiments with 'wheat' in the name"
-"Show me notebook entries for trial 123"
+"Give me a summary of all experiments"
+"Tell me abou experiment [trial_name}"
+"Plot the all the notation data of experiment [trial_name]"
 ```
 
 ## How It Works

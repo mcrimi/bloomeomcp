@@ -23,7 +23,7 @@ FastMCP is a Python framework that makes building MCP servers easy. Instead of h
 ## What This Server Does
 
 This server gives Claude access to your Bloomeo experiment data. Claude can:
-- Count your experiments (221 total)
+- Count your experiments (only considering the Trials List)
 - List experiments with pagination
 - Get experiment details including notebooks and treatments
 - Search experiments by name
@@ -45,6 +45,9 @@ pip install -e .
 ## Setup with Claude Desktop
 
 ### 1. Get Your Bearer Token
+
+If you don't know or you don't have access to the user token you can:
+
 - Open Bloomeo in your browser
 - Press F12 to open developer tools
 - Go to Network tab
@@ -72,6 +75,11 @@ Add this configuration:
 ```
 
 ### 3. Restart Claude Desktop
+
+If everything went well you should now see a new integration called *Bloomeo*:
+
+![CleanShot 2025-06-26 at 16 01 27@2x](https://github.com/user-attachments/assets/d6bf3a63-239f-4e83-8c1d-17af28a56f83)
+
 
 ## Available Functions
 

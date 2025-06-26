@@ -106,35 +106,6 @@ Ask Claude in natural language:
 "Plot the all the notation data of experiment [trial_name]"
 ```
 
-## How It Works
-
-The server connects to these Bloomeo API endpoints:
-- `/experiment/v2/trial` - Experiment listing
-- `/experiment/notebook` - Notebook entries  
-- `/experiment/treatment/trial/{id}` - Treatment data
-- `/experiment/notation/trial/{id}` - Trial notes
-- `/experiment/op-task/observation-round/variable-group/trial/{id}` - Variables
-- `/germplasm/genotype/get/many` - Genotype data
-
-## Troubleshooting
-
-**"No bearer token provided"**
-- Check the token is set in Claude Desktop config
-- Verify the token is still valid
-
-**"Failed to fetch experiments"**  
-- Check internet connection
-- Verify Bloomeo API access
-- Confirm token permissions
-
-**"Response too large"**
-- Use pagination with smaller page sizes
-- Set `include_full_data=false` for summaries
-
-**Tools not available in Claude**
-- Restart Claude Desktop after config changes
-- Check JSON syntax in config file
-- Verify Python package is installed
 
 ## Development
 

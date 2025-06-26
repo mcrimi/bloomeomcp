@@ -19,18 +19,9 @@ class BloomeoClient:
         """
         self.base_url = base_url
         self.headers = {
-            'accept': 'application/json, text/plain, */*',
-            'accept-language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7,bho;q=0.6',
+            'accept': 'application/json',
             'authorization': f'Bearer {bearer_token}',
-            'origin': 'https://app.bloomeo-app.com',
-            'referer': 'https://app.bloomeo-app.com/',
-            'sec-ch-ua': '"Google Chrome";v="137", "Chromium";v="137", "Not/A)Brand";v="24"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"macOS"',
-            'sec-fetch-dest': 'empty',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'same-site',
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36'
+            'user-agent': 'MCP-Bloomeo-Server/0.1.0'
         }
     
     async def get_experiment_task(self, experiment_id: str, task_type: str = "observation round") -> Optional[Dict[str, Any]]:

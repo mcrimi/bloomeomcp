@@ -1,52 +1,62 @@
 # MCP Bloomeo Server
 
-An MCP (Model Context Protocol) server for accessing Bloomeo experiment data. This server provides a unified interface to query experiment data, notebooks, treatments, variable groups, and trial notations from the Bloomeo API.
+A server that connects Claude Desktop to Bloomeo experiment data using the Model Context Protocol (MCP).
 
-## Features
+## What is MCP?
 
-- **Experiment Discovery**: Count and paginate through experiments with filtering
-- **Complete Experiment Data**: Get comprehensive experiment data including all related components
-- **Individual Data Access**: Access specific data types (notebooks, treatments, variables, notations)
-- **Search Functionality**: Search experiments by name with partial or exact matching
-- **Bearer Token Authentication**: Secure API access with Bearer token support
-- **Response Size Management**: Automatic pagination and data size limits to prevent timeouts
+MCP (Model Context Protocol) lets AI assistants like Claude access external data sources safely. Instead of copying data or using complex APIs, MCP creates a direct connection between Claude and your data.
+
+When you ask Claude about your experiments, it can:
+- Query your Bloomeo database directly
+- Get real-time data
+- Access specific experiments, trials, and measurements
+- Search and filter results
+
+## What is FastMCP?
+
+FastMCP is a Python framework that makes building MCP servers easy. Instead of handling the complex MCP protocol manually, you just write simple functions. FastMCP handles:
+- Network communication
+- Data formatting  
+- Error handling
+- Authentication
+
+## What This Server Does
+
+This server gives Claude access to your Bloomeo experiment data. Claude can:
+- Count your experiments (221 total)
+- List experiments with pagination
+- Get experiment details including notebooks and treatments
+- Search experiments by name
+- Access trial data, variable groups, and measurements
 
 ## Installation
 
-### Prerequisites
-- Python 3.8 or higher
-- pip package manager
+### Requirements
+- Python 3.8+
+- Access to Bloomeo with a Bearer token
 
-### Install the Package
-
-1. Clone this repository:
+### Install
 ```bash
 git clone https://github.com/mcrimi/bloomeomcp.git
 cd bloomeomcp
-```
-
-2. Install the package:
-```bash
 pip install -e .
 ```
 
-## Claude Desktop Setup
+## Setup with Claude Desktop
 
-To use this MCP server with Claude Desktop:
+### 1. Get Your Bearer Token
+- Open Bloomeo in your browser
+- Press F12 to open developer tools
+- Go to Network tab
+- Make any request in Bloomeo
+- Copy the Bearer token from the Authorization header
 
-1. **Get your Bloomeo Bearer Token**:
-   - Log into the Bloomeo web application
-   - Open your browser's developer tools (F12)
-   - Go to the Network tab and make a request to the API
-   - Copy the Bearer token from the Authorization header
+### 2. Configure Claude Desktop
 
-2. **Configure Claude Desktop**:
-   
-   Open your Claude Desktop configuration file:
-   - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-   - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+**macOS**: Edit `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows**: Edit `%APPDATA%\Claude\claude_desktop_config.json`
 
-3. **Add the server configuration**:
+Add this configuration:
 ```json
 {
   "mcpServers": {
@@ -61,177 +71,97 @@ To use this MCP server with Claude Desktop:
 }
 ```
 
-4. **Restart Claude Desktop** for the changes to take effect.
+### 3. Restart Claude Desktop
 
-## Available Tools
+## Available Functions
 
-### Core Experiment Tools
+### Experiment Discovery
+- `get_experiments_count` - Returns total count (221 experiments)
+- `get_all_experiments` - Gets one page of experiments  
+- `get_all_experiments_paginated` - Gets multiple pages automatically
+- `search_experiments_by_name` - Search by experiment name
 
-#### `get_experiments_count`
-Get the total count of available experiments.
-- **Returns**: Total count (221 experiments) and pagination information
-
-#### `get_all_experiments`
-Get a single page of experiments with full pagination control.
-- **Parameters**: 
-  - `page`: Page number (0-based)
-  - `page_size`: Results per page (max 100)
-  - `filters`: Optional filter criteria
-- **Returns**: One page of experiment data
-
-#### `get_all_experiments_paginated`
-Automatically fetch multiple pages of experiments.
-- **Parameters**:
-  - `max_pages`: Maximum pages to fetch (default: 5)
-  - `include_full_data`: Return full data vs summary (default: false)
-- **Returns**: Combined results from multiple pages
-
-#### `get_experiment_data`
-Get complete experiment data including all related information.
-- **Parameters**: `experiment_id` - The experiment ID to fetch
-- **Returns**: Comprehensive experiment data with notebooks, treatments, variables, etc.
-
-### Individual Data Access Tools
-
-#### `get_experiment_notebook`
-Get notebook entries for a specific trial.
-- **Parameters**: `trial_id` - The trial ID
-- **Returns**: Array of notebook entries with observer data
-
-#### `get_experiment_treatment`
-Get treatment data for a trial.
-- **Parameters**: `trial_id` - The trial ID
-- **Returns**: Treatment information for the trial
-
-#### `get_trial_notation`
-Get notation data for a trial.
-- **Parameters**: `trial_id` - The trial ID
-- **Returns**: Trial notation data
-
-#### `get_variable_groups`
-Get observation round variable groups for a trial.
-- **Parameters**: `trial_id` - The trial ID
-- **Returns**: Variable groups and their configurations
-
-### Search Tools
-
-#### `search_experiments_by_name`
-Search experiments by name with partial or exact matching.
-- **Parameters**: 
-  - `search_term`: Name to search for
-  - `exact_match`: True for exact match, false for partial (default: false)
-- **Returns**: Matching experiments
+### Experiment Data
+- `get_experiment_data` - Gets complete experiment information
+- `get_experiment_notebook` - Gets notebook entries for a trial
+- `get_experiment_treatment` - Gets treatment data
+- `get_trial_notation` - Gets trial notes
+- `get_variable_groups` - Gets measurement variables
 
 ## Usage Examples
 
-Once configured in Claude Desktop, you can use natural language commands:
+Ask Claude in natural language:
 
-### Basic Operations
 ```
-"How many experiments are available in Bloomeo?"
+"How many experiments do I have?"
 "Show me the first 10 experiments"
-"Get all experiments with full data for the first 2 pages"
+"Get data for experiment 66e461d780d19c639145198b"
+"Search for experiments with 'wheat' in the name"
+"Show me notebook entries for trial 123"
 ```
 
-### Specific Experiment Data
-```
-"Get complete data for experiment 66e461d780d19c639145198b"
-"Show me the notebook entries for trial 66e461d780d19c639145198b"
-"Get the treatment data for this experiment"
-```
+## How It Works
 
-### Search Operations
-```
-"Search for experiments containing 'wheat' in the name"
-"Find experiments with the exact name 'Trial 2024-01'"
-```
+The server connects to these Bloomeo API endpoints:
+- `/experiment/v2/trial` - Experiment listing
+- `/experiment/notebook` - Notebook entries  
+- `/experiment/treatment/trial/{id}` - Treatment data
+- `/experiment/notation/trial/{id}` - Trial notes
+- `/experiment/op-task/observation-round/variable-group/trial/{id}` - Variables
+- `/germplasm/genotype/get/many` - Genotype data
 
-## API Endpoints Covered
+## Troubleshooting
 
-This server interfaces with the following Bloomeo API endpoints:
+**"No bearer token provided"**
+- Check the token is set in Claude Desktop config
+- Verify the token is still valid
 
-- `GET /experiment/v2/trial` - Experiment listing and search
-- `GET /experiment/op-task/experiment/{id}` - Experiment task data
-- `GET /experiment/notebook?filter={"trialId":"..."}` - Notebook entries
-- `GET /experiment/treatment/trial/{id}` - Treatment data
-- `GET /experiment/notation/trial/{id}` - Trial notations
-- `GET /experiment/op-task/observation-round/variable-group/trial/{id}` - Variable groups
-- `POST /germplasm/genotype/get/many` - Genotype data
+**"Failed to fetch experiments"**  
+- Check internet connection
+- Verify Bloomeo API access
+- Confirm token permissions
 
-## Authentication
+**"Response too large"**
+- Use pagination with smaller page sizes
+- Set `include_full_data=false` for summaries
 
-The server supports Bearer token authentication through:
-
-1. **Environment Variable** (recommended): Set `BLOOMEO_BEARER_TOKEN`
-2. **Tool Parameter**: Include `bearer_token` in each tool call
-
-## Response Size Management
-
-The server includes automatic safeguards to prevent response size issues:
-
-- Paginated requests are limited to prevent timeouts
-- Summary mode returns only essential fields by default
-- Full data mode is limited to smaller result sets
-- Automatic pagination with configurable limits
+**Tools not available in Claude**
+- Restart Claude Desktop after config changes
+- Check JSON syntax in config file
+- Verify Python package is installed
 
 ## Development
 
 ### Project Structure
 ```
 mcp_bloomeo/
-├── __init__.py          # Package initialization
-├── __main__.py          # CLI entry point
-├── fastmcp_server.py    # FastMCP server with tool definitions
+├── __init__.py          # Package setup
+├── __main__.py          # Entry point  
+├── fastmcp_server.py    # MCP server with tools
 ├── client.py           # Bloomeo API client
-└── models.py           # Pydantic data models
+└── models.py           # Data models
 ```
 
 ### Key Components
-- **FastMCP Framework**: Provides the MCP protocol implementation
-- **HTTPx Client**: Handles async HTTP requests to Bloomeo API
-- **Pydantic Models**: Type-safe data models for API responses
-- **Error Handling**: Comprehensive error handling and logging
-
-## Troubleshooting
-
-### Common Issues
-
-1. **"No bearer token provided"**
-   - Ensure `BLOOMEO_BEARER_TOKEN` is set in Claude Desktop config
-   - Verify the token is valid and not expired
-
-2. **"Failed to fetch experiments"**
-   - Check your internet connection
-   - Verify the Bloomeo API is accessible
-   - Confirm your bearer token has proper permissions
-
-3. **"Response exceeds maximum length"**
-   - Use `include_full_data=false` for large result sets
-   - Reduce `max_pages` parameter
-   - Use pagination with smaller page sizes
-
-4. **Tool not available in Claude**
-   - Restart Claude Desktop after configuration changes
-   - Check the configuration file syntax is valid JSON
-   - Verify the Python environment has the package installed
+- **FastMCP**: Handles MCP protocol communication
+- **HTTPx**: Makes async HTTP requests to Bloomeo
+- **Pydantic**: Validates API response data
 
 ### Debug Mode
-
-For debugging, you can run the server directly:
+Run directly to see errors:
 ```bash
 python -m mcp_bloomeo
 ```
 
-This will show any startup errors or configuration issues.
+## Authentication
 
-## Contributing
+The server authenticates using Bearer tokens:
+1. Set `BLOOMEO_BEARER_TOKEN` environment variable (recommended)
+2. Pass `bearer_token` parameter to individual functions
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+## Response Limits
 
-## License
-
-This project is provided as-is for accessing Bloomeo experiment data via the MCP protocol. 
+The server prevents timeouts by:
+- Limiting page sizes to 100 items
+- Using summary mode by default for large datasets
+- Automatic pagination with safety limits 

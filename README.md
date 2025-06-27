@@ -119,26 +119,3 @@ mcp_bloomeo/
 └── models.py           # Data models
 ```
 
-### Key Components
-- **FastMCP**: Handles MCP protocol communication
-- **HTTPx**: Makes async HTTP requests to Bloomeo
-- **Pydantic**: Validates API response data
-
-### Debug Mode
-Run directly to see errors:
-```bash
-python -m mcp_bloomeo
-```
-
-## Authentication
-
-The server authenticates using Bearer tokens:
-1. Set `BLOOMEO_BEARER_TOKEN` environment variable (recommended)
-2. Pass `bearer_token` parameter to individual functions
-
-## Response Limits
-
-The server prevents timeouts by:
-- Limiting page sizes to 100 items
-- Using summary mode by default for large datasets
-- Automatic pagination with safety limits 
